@@ -60,6 +60,7 @@
 //-----------------------------------------------------------------------------
 
 
+#include <iostream>
 #include <chrono>
 #include <thread>
 #include "c_cvars.h"
@@ -183,8 +184,10 @@ static void GameTicker()
 	// Todo: Migrate state changes to here instead of doing them ad-hoc
 	while (gameaction != ga_nothing)
 	{
+		std::cout << "@@@@@@@@@gameaction2 " << gameaction << std::endl;		
 		auto ga = gameaction;
 		gameaction = ga_nothing;
+		std::cout << "@@@@@@@@@gameaction " << ga << std::endl;
 		switch (ga)
 		{
 		case ga_autoloadgame:
@@ -225,6 +228,7 @@ static void GameTicker()
 			S_SetReverb(0);
 			C_FlushDisplay();
 			BackupSaveGame = "";
+			std::cout << "hit this with" << g_nextmap->DisplayName() << std::endl;
 			NewGame(g_nextmap, g_nextskill, ga == ga_newgamenostopsound);
 			break;
 

@@ -33,6 +33,7 @@
 **
 */
 
+#include <iostream>
 #include "build.h"
 #include "gamestruct.h"
 #include "printf.h"
@@ -353,11 +354,17 @@ CCMD(levelstart)
 			TEXTCOLOR_NORMAL " is for single-player only.\n");
 		return;
 	}
+	std::cout << "@@@@@@@@@@@@got here@@@@@@@@@@@@@" << std::endl;
 	auto map = levelwarp_common(argv, "start game", "start new game at");
 	if (map)
 	{
+		std::cout << "$$$$found a map$$$$$$" << std::endl;
+		std::cout << map->DisplayName() << std::endl;
+		std::cout << map->LabelName() << std::endl;
+
 		DeferredStartGame(map, g_nextskill);
 	}
+	std::cout << "^^^^^end of function^^^^^^^^^^^^" << std::endl;
 }
 
 //---------------------------------------------------------------------------

@@ -221,7 +221,10 @@ void GameInterface::LevelCompleted(MapRecord *to_map, int skill)
 void GameInterface::Startup()
 {
     EndLevel = 0;
-    PlayLogos(ga_mainmenu, ga_mainmenu, false);
+    if (!(gameaction == ga_newgamenostopsound || gameaction == ga_newgame))
+    {
+        // PlayLogos(ga_mainmenu, ga_mainmenu, false);
+    }
 }
 
 void GameInterface::ErrorCleanup()

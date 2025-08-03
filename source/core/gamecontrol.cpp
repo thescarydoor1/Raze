@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //-------------------------------------------------------------------------
 
 #include <stdexcept>
+#include <iostream>
 #include "gamecontrol.h"
 #include "tarray.h"
 #include "zstring.h"
@@ -88,15 +89,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "buildtiles.h"
 
-void LoadHexFont(const char* filename);
-void InitWidgetResources(const char* basewad);
+void LoadHexFont(const char *filename);
+void InitWidgetResources(const char *basewad);
 void CloseWidgetResources();
 
-CVAR(Bool, autoloadlights, true, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
+CVAR(Bool, autoloadlights, true, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 CVAR(Bool, autoloadbrightmaps, true, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 CVAR(Bool, autoloadwidescreen, true, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 
-CVAR (Bool, longsavemessages, false, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
+CVAR(Bool, longsavemessages, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 
 // Note: For the automap label there is a separate option "am_textfont".
 CVARD(Bool, hud_textfont, false, CVAR_ARCHIVE, "Use the regular text font as replacement for the tiny 3x5 font for HUD messages whenever possible")
@@ -119,20 +120,20 @@ CUSTOM_CVAR(Int, mouse_capturemode, 1, CVAR_GLOBALCONFIG | CVAR_ARCHIVE)
 
 void I_UpdateWindowTitle();
 
-CUSTOM_CVAR (Bool, i_discordrpc, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
+CUSTOM_CVAR(Bool, i_discordrpc, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 {
 	I_UpdateWindowTitle();
 }
-CUSTOM_CVAR(Int, I_FriendlyWindowTitle, 1, CVAR_GLOBALCONFIG|CVAR_ARCHIVE|CVAR_NOINITCALL)
+CUSTOM_CVAR(Int, I_FriendlyWindowTitle, 1, CVAR_GLOBALCONFIG | CVAR_ARCHIVE | CVAR_NOINITCALL)
 {
 	I_UpdateWindowTitle();
 }
 
 // The last remains of sdlayer.cpp
-GameInterface* gi;
+GameInterface *gi;
 int myconnectindex, numplayers;
 int connecthead, connectpoint2[MAXPLAYERS];
-auto vsnprintfptr = vsnprintf;	// This is an inline in Visual Studio but we need an address for it to satisfy the MinGW compiled libraries.
+auto vsnprintfptr = vsnprintf; // This is an inline in Visual Studio but we need an address for it to satisfy the MinGW compiled libraries.
 
 extern bool pauseext;
 
@@ -140,39 +141,38 @@ cycle_t thinktime, actortime, gameupdatetime, drawtime;
 
 gameaction_t gameaction = ga_nothing;
 // gameaction state
-MapRecord* g_nextmap;
+MapRecord *g_nextmap;
 int g_nextskill = -1;
 int g_bossexit;
 
-
-FILE* hashfile;
+FILE *hashfile;
 
 InputState inputState;
 int ShowStartupWindow(TArray<GrpEntry> &);
 std::vector<std::string> GetGameFronUserFiles();
-void InitFileSystem(TArray<GrpEntry>&);
-void I_SetWindowTitle(const char* caption);
+void InitFileSystem(TArray<GrpEntry> &);
+void I_SetWindowTitle(const char *caption);
 void S_ParseSndInfo();
 void I_DetectOS(void);
 void LoadScripts();
 void MainLoop();
 void SetConsoleNotifyBuffer();
-bool PreBindTexture(FRenderState* state, FGameTexture*& tex, EUpscaleFlags& flags, int& scaleflags, int& clampmode, int& translation, int& overrideshader);
+bool PreBindTexture(FRenderState *state, FGameTexture *&tex, EUpscaleFlags &flags, int &scaleflags, int &clampmode, int &translation, int &overrideshader);
 void highTileSetup();
-void FontCharCreated(FGameTexture* base, FGameTexture* untranslated);
+void FontCharCreated(FGameTexture *base, FGameTexture *untranslated);
 void LoadVoxelModels();
 void MarkMap();
 void BuildFogTable();
 void ParseGLDefs();
-void I_UpdateDiscordPresence(bool SendPresence, const char* curstatus, const char* appid, const char* steamappid);
-bool G_Responder(event_t* ev);
+void I_UpdateDiscordPresence(bool SendPresence, const char *curstatus, const char *appid, const char *steamappid);
+bool G_Responder(event_t *ev);
 void HudScaleChanged();
-bool M_SetSpecialMenu(FName& menu, int param);
+bool M_SetSpecialMenu(FName &menu, int param);
 void OnMenuOpen(bool makeSound);
 void DestroyAltHUD();
 void MarkPlayers();
 
-DStatusBarCore* StatusBar;
+DStatusBarCore *StatusBar;
 
 FString currentGame;
 FString LumpFilter;
@@ -191,10 +191,11 @@ extern int nextwipe;
 
 CUSTOM_CVAR(Int, cl_gender, 0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 {
-	if (self < 0 || self > 3) self = 0;
+	if (self < 0 || self > 3)
+		self = 0;
 }
 
-bool validFilter(const char* str);
+bool validFilter(const char *str);
 
 extern int chatmodeon;
 
@@ -213,7 +214,7 @@ bool System_WantGuiCapture()
 	return wantCapt;
 }
 
-bool System_DispatchEvent(event_t* ev)
+bool System_DispatchEvent(event_t *ev)
 {
 	if (ev->type == EV_Mouse && !System_WantGuiCapture())
 	{
@@ -227,12 +228,12 @@ bool System_DispatchEvent(event_t* ev)
 
 bool System_WantLeftButton()
 {
-	return false;// (gamestate == GS_MENUSCREEN || gamestate == GS_TITLELEVEL);
+	return false; // (gamestate == GS_MENUSCREEN || gamestate == GS_TITLELEVEL);
 }
 
 bool System_NetGame()
 {
-	return false;	// fixme later. For now there is no netgame support.
+	return false; // fixme later. For now there is no netgame support.
 }
 
 bool System_WantNativeMouse()
@@ -247,7 +248,7 @@ static bool System_CaptureModeInGame()
 
 static bool System_DisableTextureFilter()
 {
-	return  hw_useindexedcolortextures;
+	return hw_useindexedcolortextures;
 }
 
 static IntRect System_GetSceneRect()
@@ -259,8 +260,10 @@ static IntRect System_GetSceneRect()
 
 	int renderheight;
 
-	if (viewheight == screen->GetHeight()) renderheight = viewheight;
-	else renderheight = (viewwidth * screen->GetHeight() / screen->GetWidth()) & ~7;
+	if (viewheight == screen->GetHeight())
+		renderheight = viewheight;
+	else
+		renderheight = (viewwidth * screen->GetHeight() / screen->GetWidth()) & ~7;
 
 	IntRect mSceneViewport;
 	mSceneViewport.left = viewport3d.Left();
@@ -278,10 +281,10 @@ static IntRect System_GetSceneRect()
 //
 //==========================================================================
 
-void System_CrashInfo(char* buffer, size_t bufflen, const char *lfstr)
+void System_CrashInfo(char *buffer, size_t bufflen, const char *lfstr)
 {
-	const char* arg;
-	char* const buffend = buffer + bufflen - 2;	// -2 for CRLF at end
+	const char *arg;
+	char *const buffend = buffer + bufflen - 2; // -2 for CRLF at end
 	int i;
 
 	buffer += mysnprintf(buffer, buffend - buffer, GAMENAME " version %s (%s)", GetVersionString(), GetGitHash());
@@ -299,8 +302,6 @@ void System_CrashInfo(char* buffer, size_t bufflen, const char *lfstr)
 	buffer += mysnprintf(buffer, buffend - buffer, "%s", lfstr);
 	*buffer = 0;
 }
-
-
 
 //==========================================================================
 //
@@ -329,9 +330,11 @@ void UserConfig::ProcessOptions()
 	if (v)
 	{
 		auto val = strtol(v, nullptr, 0);
-		static const char* const addons[] = { "DUKE3D.GRP", "DUKEDC.GRP", "NWINTER.GRP", "VACATION.GRP" };
-		if (val >= 0 && val < 4) gamegrp = addons[val];
-		else Printf("%s: Unknown Addon\n", v);
+		static const char *const addons[] = {"DUKE3D.GRP", "DUKEDC.GRP", "NWINTER.GRP", "VACATION.GRP"};
+		if (val >= 0 && val < 4)
+			gamegrp = addons[val];
+		else
+			Printf("%s: Unknown Addon\n", v);
 	}
 	else if (Args->CheckParm("-nam"))
 	{
@@ -351,7 +354,7 @@ void UserConfig::ProcessOptions()
 	{
 		gamegrp = "REDNECK.GRP";
 		DefaultCon = "GAME66.CON";
-		const char* argv[] = { "tilesa66.art" , "tilesb66.art" };
+		const char *argv[] = {"tilesa66.art", "tilesb66.art"};
 		AddArt.reset(new FArgs(2, argv));
 		toBeDeleted.Push("turd66.anm*turdmov.anm");
 		toBeDeleted.Push("turd66.voc*turdmov.voc");
@@ -362,7 +365,7 @@ void UserConfig::ProcessOptions()
 	{
 		gamegrp = "BLOOD.RFF";
 		DefaultCon = "CRYPTIC.INI";
-		const char* argv[] = { "CPART07.AR_", "CPART15.AR_" };
+		const char *argv[] = {"CPART07.AR_", "CPART15.AR_"};
 		AddArt.reset(new FArgs(2, argv));
 	}
 
@@ -384,40 +387,42 @@ void UserConfig::ProcessOptions()
 
 	Args->CollectFiles("-rts", ".rts");
 	auto rts = Args->CheckValue("-rts");
-	if (rts) RTS_Init(rts);
+	if (rts)
+		RTS_Init(rts);
 
 	Args->CollectFiles("-map", ".map");
 	CommandMap = Args->CheckValue("-map");
 
-	static const char* defs[] = { "-def", "-h", nullptr };
+	static const char *defs[] = {"-def", "-h", nullptr};
 	Args->CollectFiles("-def", defs, ".def");
 	UserDef = Args->CheckValue("-def");
 
 	if (DefaultCon.IsEmpty())
 	{
-		static const char* cons[] = { "-con", "-x", nullptr };
+		static const char *cons[] = {"-con", "-x", nullptr};
 		Args->CollectFiles("-con", cons, ".con");
 		DefaultCon = Args->CheckValue("-con");
-		if (DefaultCon.IsEmpty()) DefaultCon = Args->CheckValue("-ini");
+		if (DefaultCon.IsEmpty())
+			DefaultCon = Args->CheckValue("-ini");
 	}
 
-	static const char* demos[] = { "-playback", "-d", "-demo", nullptr };
+	static const char *demos[] = {"-playback", "-d", "-demo", nullptr};
 	Args->CollectFiles("-demo", demos, ".dmo");
 	CommandDemo = Args->CheckValue("-demo");
 
-	static const char* names[] = { "-pname", "-name", nullptr };
-	Args->CollectFiles("-name", names, ".---");	// this shouldn't collect any file names at all so use a nonsense extension
+	static const char *names[] = {"-pname", "-name", nullptr};
+	Args->CollectFiles("-name", names, ".---"); // this shouldn't collect any file names at all so use a nonsense extension
 	CommandName = Args->CheckValue("-name");
 
-	static const char* nomos[] = { "-nomonsters", "-nodudes", "-nocreatures", nullptr };
-	Args->CollectFiles("-nomonsters", nomos, ".---");	// this shouldn't collect any file names at all so use a nonsense extension
+	static const char *nomos[] = {"-nomonsters", "-nodudes", "-nocreatures", nullptr};
+	Args->CollectFiles("-nomonsters", nomos, ".---"); // this shouldn't collect any file names at all so use a nonsense extension
 	nomonsters = Args->CheckParm("-nomonsters");
 
-	static const char* acons[] = { "-addcon", "-mx", nullptr };
+	static const char *acons[] = {"-addcon", "-mx", nullptr};
 	Args->CollectFiles("-addcon", acons, ".con");
 	AddCons.reset(Args->GatherFiles("-addcon"));
 
-	static const char* adefs[] = { "-adddef", "-mh", nullptr };
+	static const char *adefs[] = {"-adddef", "-mh", nullptr};
 	Args->CollectFiles("-adddef", adefs, ".def");
 	AddDefs.reset(Args->GatherFiles("-adddef"));
 
@@ -426,34 +431,43 @@ void UserConfig::ProcessOptions()
 
 	nologo = Args->CheckParm("-nologo") || Args->CheckParm("-quick");
 	nosound = Args->CheckParm("-nosfx") || Args->CheckParm("-nosound");
-	if (Args->CheckParm("-setup")) queryiwad = 1;
-	else if (Args->CheckParm("-nosetup")) queryiwad = 0;
+	if (Args->CheckParm("-setup"))
+		queryiwad = 1;
+	else if (Args->CheckParm("-nosetup"))
+		queryiwad = 0;
 
+	v = Args->CheckValue("-levelstart");
+	if (v)
+	{
+		std::string command = std::string("levelstart ") + v;
+		std::cout << command << std::endl;
+		C_DoCommand(command.c_str());
+	}
 
 	if (Args->CheckParm("-file"))
 	{
 		// For file loading there's two modes:
 		// If -file is given, all content will be processed in order and the legacy options be ignored entirely.
-		//This allows mixing directories and GRP files in arbitrary order.
+		// This allows mixing directories and GRP files in arbitrary order.
 		Args->CollectFiles("-file", NULL);
 		AddFiles.reset(Args->GatherFiles("-file"));
 	}
 	else
 	{
-		// Trying to emulate Build. This means to treat RFF files as lowest priority, then all GRPs and then all directories. 
+		// Trying to emulate Build. This means to treat RFF files as lowest priority, then all GRPs and then all directories.
 		// This is only for people depending on lauchers. Since the semantics are so crappy it is strongly recommended to
 		// use -file instead which gives the user full control over the order in which things are added.
 		// For single mods this is no problem but don't even think about loading more stuff consistently...
 
-		static const char* grps[] = { "-g", "-grp", nullptr };
-		static const char* dirs[] = { "-game_dir", "-j",  nullptr };
-		static const char* rffs[] = { "-rff", "-snd",  nullptr };
-		static const char* twostep[] = { "-rff", "-grp",  nullptr };
+		static const char *grps[] = {"-g", "-grp", nullptr};
+		static const char *dirs[] = {"-game_dir", "-j", nullptr};
+		static const char *rffs[] = {"-rff", "-snd", nullptr};
+		static const char *twostep[] = {"-rff", "-grp", nullptr};
 
 		// Abuse the inner workings to get the files into proper order. This is not 100% accurate but should work fine for everything that doesn't intentionally fuck things up.
 		Args->CollectFiles("-rff", rffs, ".rff");
 		Args->CollectFiles("-grp", grps, nullptr);
-		Args->CollectFiles("-grp", twostep, nullptr);	// The two previous calls have already brought the content in order so collecting it again gives us one list with everything.
+		Args->CollectFiles("-grp", twostep, nullptr); // The two previous calls have already brought the content in order so collecting it again gives us one list with everything.
 		AddFilesPre.reset(Args->GatherFiles("-grp"));
 		Args->CollectFiles("-game_dir", dirs, nullptr);
 		AddFiles.reset(Args->GatherFiles("-game_dir"));
@@ -462,7 +476,6 @@ void UserConfig::ProcessOptions()
 	{
 		C_DoCommand("stat coord");
 	}
-
 }
 
 //==========================================================================
@@ -473,10 +486,11 @@ void UserConfig::ProcessOptions()
 
 void CheckUserMap()
 {
-	if (userConfig.CommandMap.IsEmpty()) return;
+	if (userConfig.CommandMap.IsEmpty())
+		return;
 	if (FindMapByName(userConfig.CommandMap.GetChars()))
 	{
-		return;	// we already got a record for this map so no need for further checks.
+		return; // we already got a record for this map so no need for further checks.
 	}
 	FString startupMap = userConfig.CommandMap;
 	DefaultExtension(startupMap, ".map");
@@ -499,19 +513,19 @@ void CheckUserMap()
 
 namespace Duke3d
 {
-	::GameInterface* CreateInterface();
+	::GameInterface *CreateInterface();
 }
 namespace Blood
 {
-	::GameInterface* CreateInterface();
+	::GameInterface *CreateInterface();
 }
 namespace ShadowWarrior
 {
-	::GameInterface* CreateInterface();
+	::GameInterface *CreateInterface();
 }
 namespace Exhumed
 {
-	::GameInterface* CreateInterface();
+	::GameInterface *CreateInterface();
 }
 
 void CheckFrontend(int flags)
@@ -556,13 +570,10 @@ bool WantEscape()
 
 EXTERN_CVAR(Int, duke_menufont)
 
-void LanguageChanged(const char* lang)
+void LanguageChanged(const char *lang)
 {
 	duke_menufont->Callback();
 }
-
-
-
 
 void I_StartupJoysticks();
 void I_ShutdownInput();
@@ -577,58 +588,59 @@ int GameMain()
 	C_InitCVars(0);
 	SetConsoleNotifyBuffer();
 	sysCallbacks =
-	{
-		G_Responder,
-		System_WantGuiCapture,
-		System_WantLeftButton,
-		System_NetGame,
-		System_WantNativeMouse,
-		System_CaptureModeInGame,
-		nullptr,
-		nullptr,
-		nullptr,
-		System_DisableTextureFilter,
-		nullptr,
-		System_GetSceneRect,
-		nullptr,
-		System_MenuDim,
-		nullptr,
-		System_DispatchEvent,
-		validFilter,
-		System_MenuClosed,
-		nullptr,
-		nullptr,
-		PreBindTexture,
-		FontCharCreated,
-		System_ToggleFullConsole,
-		System_StartCutscene,
-		System_SetTransition,
-		CheckCheatmode,
-		HudScaleChanged,
-		M_SetSpecialMenu,
-		OnMenuOpen,
-		LanguageChanged,
-		nullptr,
-		[]() ->FConfigFile* { return GameConfig; },
-		WantEscape,
-	};
+		{
+			G_Responder,
+			System_WantGuiCapture,
+			System_WantLeftButton,
+			System_NetGame,
+			System_WantNativeMouse,
+			System_CaptureModeInGame,
+			nullptr,
+			nullptr,
+			nullptr,
+			System_DisableTextureFilter,
+			nullptr,
+			System_GetSceneRect,
+			nullptr,
+			System_MenuDim,
+			nullptr,
+			System_DispatchEvent,
+			validFilter,
+			System_MenuClosed,
+			nullptr,
+			nullptr,
+			PreBindTexture,
+			FontCharCreated,
+			System_ToggleFullConsole,
+			System_StartCutscene,
+			System_SetTransition,
+			CheckCheatmode,
+			HudScaleChanged,
+			M_SetSpecialMenu,
+			OnMenuOpen,
+			LanguageChanged,
+			nullptr,
+			[]() -> FConfigFile *
+			{ return GameConfig; },
+			WantEscape,
+		};
 
 	try
 	{
 		r = RunGame();
 	}
-	catch (const CExitEvent& exit)
+	catch (const CExitEvent &exit)
 	{
 		// Just let the rest of the function execute.
 		r = exit.Reason();
 	}
-	catch (const std::exception& err)
+	catch (const std::exception &err)
 	{
 		// shut down critical systems before showing a message box.
 		I_ShowFatalError(err.what());
 		r = -1;
 	}
-	//DeleteScreenJob();
+	// DeleteScreenJob();
 	if (gi)
 	{
 		gi->FreeLevelData();
@@ -640,10 +652,12 @@ int GameMain()
 	}
 	DestroyAltHUD();
 	DeinitMenus();
-	if (StatusBar) StatusBar->Destroy();
+	if (StatusBar)
+		StatusBar->Destroy();
 	StatusBar = nullptr;
 	S_StopMusic(true);
-	if (soundEngine) delete soundEngine;
+	if (soundEngine)
+		delete soundEngine;
 	soundEngine = nullptr;
 	I_CloseSound();
 	I_ShutdownInput();
@@ -663,7 +677,8 @@ int GameMain()
 	CloseWidgetResources();
 	PClass::StaticShutdown();
 	C_UninitCVars();
-	if (Args) delete Args;
+	if (Args)
+		delete Args;
 	return r;
 }
 
@@ -690,7 +705,7 @@ void SetDefaultStrings()
 		gSkillNames[0] = "Default";
 	}
 
-	//Set a few quotes which are used for common handling of a few status messages
+	// Set a few quotes which are used for common handling of a few status messages
 	quoteMgr.InitializeQuote(23, "$MSGON");
 	quoteMgr.InitializeQuote(24, "$MSGOFF");
 	quoteMgr.InitializeQuote(83, "$FOLLOW MODE OFF");
@@ -718,7 +733,8 @@ static TArray<GrpEntry> SetupGame()
 #ifdef WIN32
 		);
 #else
-		"\nInstall game data files in subfolders of '%s'\n\n", M_GetAppDataPath(false).GetChars());
+				"\nInstall game data files in subfolders of '%s'\n\n",
+				M_GetAppDataPath(false).GetChars());
 #endif
 	}
 
@@ -729,10 +745,10 @@ static TArray<GrpEntry> SetupGame()
 	auto game = GetGameFronUserFiles();
 	if (userConfig.gamegrp.IsEmpty())
 	{
-		for (auto& str : game)
+		for (auto &str : game)
 		{
 			int g = 0;
-			for (auto& grp : groups)
+			for (auto &grp : groups)
 			{
 				if (grp.FileInfo.gameid.CompareNoCase(str.c_str()) == 0)
 				{
@@ -744,7 +760,7 @@ static TArray<GrpEntry> SetupGame()
 			}
 		}
 	}
-	foundit:
+foundit:
 
 	// If the user has specified a script, let's see if we know it.
 	//
@@ -753,7 +769,7 @@ static TArray<GrpEntry> SetupGame()
 		FString DefaultConlower = userConfig.DefaultCon.MakeLower();
 
 		int g = 0;
-		for (auto& grp : groups)
+		for (auto &grp : groups)
 		{
 			if (grp.FileInfo.scriptname.MakeLower() == DefaultConlower)
 			{
@@ -769,10 +785,11 @@ static TArray<GrpEntry> SetupGame()
 	if (groupno == -1 && userConfig.gamegrp.Len())
 	{
 		FString gamegrplower = userConfig.gamegrp.MakeLower();
-		if (gamegrplower[1] != ':' || gamegrplower[2] != '/') gamegrplower.Insert(0, "/");
+		if (gamegrplower[1] != ':' || gamegrplower[2] != '/')
+			gamegrplower.Insert(0, "/");
 
 		int g = 0;
-		for (auto& grp : groups)
+		for (auto &grp : groups)
 		{
 			auto grplower = grp.FileName.MakeLower();
 			FixPathSeperator(grplower);
@@ -798,7 +815,7 @@ static TArray<GrpEntry> SetupGame()
 			{
 				for (unsigned i = 0; i < groups.Size(); ++i)
 				{
-					FString& basename = groups[i].FileInfo.name;
+					FString &basename = groups[i].FileInfo.name;
 					if (stricmp(basename.GetChars(), defaultiwad) == 0)
 					{
 						pick = i;
@@ -809,7 +826,7 @@ static TArray<GrpEntry> SetupGame()
 			if (groups.Size() > 1)
 			{
 				TArray<WadStuff> wads;
-				for (auto& found : groups)
+				for (auto &found : groups)
 				{
 					WadStuff stuff;
 					stuff.Name = found.FileInfo.name;
@@ -818,10 +835,14 @@ static TArray<GrpEntry> SetupGame()
 				}
 
 				int flags = 0;
-				if (disableautoload) flags |= 1;
-				if (autoloadlights) flags |= 2;
-				if (autoloadbrightmaps) flags |= 4;
-				if (autoloadwidescreen) flags |= 8;
+				if (disableautoload)
+					flags |= 1;
+				if (autoloadlights)
+					flags |= 2;
+				if (autoloadbrightmaps)
+					flags |= 4;
+				if (autoloadwidescreen)
+					flags |= 8;
 
 				FString extraArgs;
 				pick = I_PickIWad(&wads[0], (int)wads.Size(), queryiwad, pick, flags, extraArgs);
@@ -843,40 +864,48 @@ static TArray<GrpEntry> SetupGame()
 		}
 	}
 
-	if (groupno == -1) return TArray<GrpEntry>();
-	auto& group = groups[groupno];
+	if (groupno == -1)
+		return TArray<GrpEntry>();
+	auto &group = groups[groupno];
 
 	// Now filter out the data we actually need and delete the rest.
 
 	usedgroups.Push(group);
 
 	auto crc = group.FileInfo.dependencyCRC;
-	if (crc != 0) for (auto& dep : groups)
-	{
-		if (dep.FileInfo.CRC == crc)
+	if (crc != 0)
+		for (auto &dep : groups)
 		{
-			usedgroups.Insert(0, dep);	// Order from least dependent to most dependent, which is the loading order of data.
+			if (dep.FileInfo.CRC == crc)
+			{
+				usedgroups.Insert(0, dep); // Order from least dependent to most dependent, which is the loading order of data.
+			}
 		}
-	}
 	groups.Reset();
 
 	FString selectedScript;
 	FString selectedDef;
-	for (auto& ugroup : usedgroups)
+	for (auto &ugroup : usedgroups)
 	{
 		// For CONs the command line has priority, aside from that, the last one wins. For Blood this handles INIs - the rules are the same.
-		if (ugroup.FileInfo.scriptname.IsNotEmpty()) selectedScript = ugroup.FileInfo.scriptname;
-		if (ugroup.FileInfo.defname.IsNotEmpty()) selectedDef = ugroup.FileInfo.defname;
+		if (ugroup.FileInfo.scriptname.IsNotEmpty())
+			selectedScript = ugroup.FileInfo.scriptname;
+		if (ugroup.FileInfo.defname.IsNotEmpty())
+			selectedDef = ugroup.FileInfo.defname;
 
 		// CVAR has priority. This also overwrites the global variable each time. Init here is lazy so this is ok.
-		if (ugroup.FileInfo.rtsname.IsNotEmpty() && **rtsname == 0) RTS_Init(ugroup.FileInfo.rtsname.GetChars());
+		if (ugroup.FileInfo.rtsname.IsNotEmpty() && **rtsname == 0)
+			RTS_Init(ugroup.FileInfo.rtsname.GetChars());
 
 		// For the game filter the last non-empty one wins.
-		if (ugroup.FileInfo.gamefilter.IsNotEmpty()) LumpFilter = ugroup.FileInfo.gamefilter;
+		if (ugroup.FileInfo.gamefilter.IsNotEmpty())
+			LumpFilter = ugroup.FileInfo.gamefilter;
 		g_gameType |= ugroup.FileInfo.flags;
 	}
-	if (userConfig.DefaultCon.IsEmpty()) userConfig.DefaultCon = GameStartupInfo.con.IsNotEmpty()? GameStartupInfo.con : selectedScript;
-	if (userConfig.DefaultDef.IsEmpty()) userConfig.DefaultDef = selectedDef;
+	if (userConfig.DefaultCon.IsEmpty())
+		userConfig.DefaultCon = GameStartupInfo.con.IsNotEmpty() ? GameStartupInfo.con : selectedScript;
+	if (userConfig.DefaultDef.IsEmpty())
+		userConfig.DefaultDef = selectedDef;
 
 	// This can only happen with a custom game that does not define any filter.
 	// In this case take the display name and strip all whitespace and invaliid path characters from it.
@@ -907,12 +936,12 @@ void CreateStatusBar()
 	{
 		I_FatalError("No status bar defined");
 	}
-	StatusBar = static_cast<DStatusBarCore*>(stbarclass->CreateNew());
+	StatusBar = static_cast<DStatusBarCore *>(stbarclass->CreateNew());
 	StatusBar->SetSize(0, 320, 200);
 	InitStatusBar();
-	GC::AddMarkerFunc([]() { GC::Mark(StatusBar); });
+	GC::AddMarkerFunc([]()
+					  { GC::Mark(StatusBar); });
 }
-
 
 void GetGames()
 {
@@ -927,19 +956,11 @@ void GetGames()
 			{
 				if (arc.BeginArray("games"))
 				{
-					for (auto& entry : groups)
+					for (auto &entry : groups)
 					{
 						if (arc.BeginObject(nullptr))
 						{
-							arc("filename", entry.FileName)
-								("description", entry.FileInfo.name)
-								("defname", entry.FileInfo.defname)
-								("scriptname", entry.FileInfo.scriptname)
-								("gamefilter", entry.FileInfo.gamefilter)
-								("gameid", entry.FileInfo.gameid)
-								("fgcolor", entry.FileInfo.FgColor)
-								("bkcolor", entry.FileInfo.BgColor)
-								("addon", entry.FileInfo.isAddon)
+							arc("filename", entry.FileName)("description", entry.FileInfo.name)("defname", entry.FileInfo.defname)("scriptname", entry.FileInfo.scriptname)("gamefilter", entry.FileInfo.gamefilter)("gameid", entry.FileInfo.gameid)("fgcolor", entry.FileInfo.FgColor)("bkcolor", entry.FileInfo.BgColor)("addon", entry.FileInfo.isAddon)
 								.EndObject();
 						}
 					}
@@ -947,7 +968,7 @@ void GetGames()
 				}
 				unsigned int len;
 				auto p = arc.GetOutput(&len);
-				FILE* f = fopen(getgames, "wb");
+				FILE *f = fopen(getgames, "wb");
 				if (f)
 				{
 					fwrite(p, 1, len, f);
@@ -969,37 +990,38 @@ void GetGames()
 //
 //==========================================================================
 
-static void InitTextures(TArray<GrpEntry>& usedgroups)
+static void InitTextures(TArray<GrpEntry> &usedgroups)
 {
 	voxInit();
 
 	TexMan.usefullnames = true;
 	TexMan.Init();
-	TexMan.AddTextures([]() {}, [](BuildInfo&) {});
+	TexMan.AddTextures([]() {}, [](BuildInfo &) {});
 	StartWindow->Progress();
 
 	TArray<FString> addArt;
-	for (auto& grp : usedgroups)
+	for (auto &grp : usedgroups)
 	{
-		for (auto& art : grp.FileInfo.loadart)
+		for (auto &art : grp.FileInfo.loadart)
 		{
 			addArt.Push(art);
 		}
 	}
-	if (userConfig.AddArt) for (auto& art : *userConfig.AddArt)
-	{
-		addArt.Push(art);
-	}
+	if (userConfig.AddArt)
+		for (auto &art : *userConfig.AddArt)
+		{
+			addArt.Push(art);
+		}
 	InitArtFiles(addArt);
 
 	ConstructTileset();
-	InitFont();				// InitFonts may only be called once all texture data has been initialized.
+	InitFont(); // InitFonts may only be called once all texture data has been initialized.
 
 	lookups.postLoadTables();
 	highTileSetup();
 	lookups.postLoadLookups();
 	SetupFontSubstitution();
-	V_LoadTranslations();   // loading the translations must be delayed until the palettes have been fully set up.
+	V_LoadTranslations(); // loading the translations must be delayed until the palettes have been fully set up.
 	UpdateUpscaleMask();
 }
 
@@ -1022,12 +1044,12 @@ int RunGame()
 	{
 		I_FatalError("Cannot find " ENGINERES_FILE);
 	}
-	LoadHexFont(wad);	// load hex font early so we have it during startup.
+	LoadHexFont(wad); // load hex font early so we have it during startup.
 	InitWidgetResources(wad);
 
 	// load strings for picker window.
 	FileSys::FileSystem lang_fs;
-	std::vector<std::string> base_fn = { wad };
+	std::vector<std::string> base_fn = {wad};
 	lang_fs.InitMultipleFiles(base_fn);
 	GStrings.LoadStrings(lang_fs, language);
 
@@ -1038,7 +1060,8 @@ int RunGame()
 	FString logfile = Args->TakeValue("+logfile");
 
 	// As long as this engine is still in prerelease mode let's always write a log file.
-	if (logfile.IsEmpty()) logfile.Format("%s" GAMENAMELOWERCASE ".log", M_GetDocumentsPath().GetChars());
+	if (logfile.IsEmpty())
+		logfile.Format("%s" GAMENAMELOWERCASE ".log", M_GetDocumentsPath().GetChars());
 
 	if (logfile.IsNotEmpty())
 	{
@@ -1054,12 +1077,13 @@ int RunGame()
 	V_Init2();
 
 	bool colorset = false;
-	for (int i = usedgroups.Size()-1; i >= 0; i--)
+	for (int i = usedgroups.Size() - 1; i >= 0; i--)
 	{
-		auto& grp = usedgroups[i];
+		auto &grp = usedgroups[i];
 		if (grp.FileInfo.name.IsNotEmpty())
 		{
-			if (GameStartupInfo.Name.IsEmpty()) GameStartupInfo.Name = grp.FileInfo.name;
+			if (GameStartupInfo.Name.IsEmpty())
+				GameStartupInfo.Name = grp.FileInfo.name;
 			if (!colorset && grp.FileInfo.FgColor != grp.FileInfo.BgColor && (GameStartupInfo.FgColor != 0 || GameStartupInfo.BkColor != 0))
 			{
 				GameStartupInfo.FgColor = grp.FileInfo.FgColor;
@@ -1069,7 +1093,7 @@ int RunGame()
 		}
 		if (grp.FileInfo.exclepisodes.Size())
 		{
-			for (auto& episode : grp.FileInfo.exclepisodes)
+			for (auto &episode : grp.FileInfo.exclepisodes)
 			{
 				gi->AddExcludedEpisode(episode);
 			}
@@ -1078,34 +1102,35 @@ int RunGame()
 	I_SetIWADInfo();
 
 	InitFileSystem(usedgroups);
-	if (usedgroups.Size() == 0) return 0;
+	if (usedgroups.Size() == 0)
+		return 0;
 
 	// Handle CVARs with game specific defaults here.
 	if (isBlood())
 	{
-		mus_redbook->SetGenericRepDefault(false, CVAR_Bool);	// Blood should default to CD Audio off - all other games must default to on.
+		mus_redbook->SetGenericRepDefault(false, CVAR_Bool); // Blood should default to CD Audio off - all other games must default to on.
 		am_showlabel->SetGenericRepDefault(true, CVAR_Bool);
 	}
 	if (isSWALL())
 	{
-		hud_showmapname->SetGenericRepDefault(false, CVAR_Bool);	// SW never had this feature, make it optional.
+		hud_showmapname->SetGenericRepDefault(false, CVAR_Bool); // SW never had this feature, make it optional.
 		cl_weaponswitch->SetGenericRepDefault(1, CVAR_Int);
-		if (cl_weaponswitch > 1) cl_weaponswitch = 1;
+		if (cl_weaponswitch > 1)
+			cl_weaponswitch = 1;
 	}
 	if (isExhumed())
 	{
-		cl_viewbob->SetGenericRepDefault(0, CVAR_Int);	// Exhumed never had this feature, make it optional.
+		cl_viewbob->SetGenericRepDefault(0, CVAR_Int); // Exhumed never had this feature, make it optional.
 	}
-	if (g_gameType & (GAMEFLAG_BLOOD|GAMEFLAG_RR))
+	if (g_gameType & (GAMEFLAG_BLOOD | GAMEFLAG_RR))
 	{
-		am_nameontop->SetGenericRepDefault(true, CVAR_Bool);	// Blood and RR show the map name on the top of the screen by default.
+		am_nameontop->SetGenericRepDefault(true, CVAR_Bool); // Blood and RR show the map name on the top of the screen by default.
 	}
 
 	G_ReadConfig(currentGame.GetChars());
 
 	V_InitFontColors();
 	GStrings.LoadStrings(fileSystem, language);
-
 
 	CheckCPUID(&CPU);
 	CalculateCPUSpeed();
@@ -1128,8 +1153,9 @@ int RunGame()
 	CheckUserMap();
 
 	palindexmap[0] = 255;
-	for (int i = 1; i <= 255; i++) palindexmap[i] = i;
-	GPalette.Init(MAXPALOOKUPS + 2, palindexmap);    // one slot for each translation, plus a separate one for the base palettes and the internal one
+	for (int i = 1; i <= 255; i++)
+		palindexmap[i] = i;
+	GPalette.Init(MAXPALOOKUPS + 2, palindexmap); // one slot for each translation, plus a separate one for the base palettes and the internal one
 	gi->loadPalette();
 	BuildFogTable();
 	StartWindow->Progress();
@@ -1235,13 +1261,13 @@ void updatePauseStatus()
 
 	if (paused)
 		S_PauseSound(!pausedWithKey, !paused);
-	else 
+	else
 		S_ResumeSound(paused);
 }
 
 //==========================================================================
 //
-// 
+//
 //
 //==========================================================================
 
@@ -1252,12 +1278,12 @@ void setVideoMode()
 	int xdim = screen->GetWidth();
 	int ydim = screen->GetHeight();
 	V_UpdateModeSize(xdim, ydim);
-	viewport3d = { 0, 0, xdim, ydim };
+	viewport3d = {0, 0, xdim, ydim};
 }
 
 //==========================================================================
 //
-// 
+//
 //
 //==========================================================================
 
@@ -1271,7 +1297,7 @@ CVAR(String, combatmacro6, "", CVAR_ARCHIVE | CVAR_USERINFO)
 CVAR(String, combatmacro7, "", CVAR_ARCHIVE | CVAR_USERINFO)
 CVAR(String, combatmacro8, "", CVAR_ARCHIVE | CVAR_USERINFO)
 CVAR(String, combatmacro9, "", CVAR_ARCHIVE | CVAR_USERINFO)
-FStringCVarRef* const CombatMacros[] = { &combatmacro0, &combatmacro1, &combatmacro2, &combatmacro3, &combatmacro4, &combatmacro5, &combatmacro6, &combatmacro7, &combatmacro8, &combatmacro9};
+FStringCVarRef *const CombatMacros[] = {&combatmacro0, &combatmacro1, &combatmacro2, &combatmacro3, &combatmacro4, &combatmacro5, &combatmacro6, &combatmacro7, &combatmacro8, &combatmacro9};
 
 void CONFIG_ReadCombatMacros()
 {
@@ -1295,24 +1321,22 @@ void CONFIG_ReadCombatMacros()
 
 //==========================================================================
 //
-// 
+//
 //
 //==========================================================================
-
 
 CCMD(pause)
 {
 	sendPause = true;
 }
 
-
 CCMD(snd_reset)
 {
 	Mus_Stop();
-	if (soundEngine) soundEngine->Reset();
+	if (soundEngine)
+		soundEngine->Reset();
 	Mus_ResumeSaved();
 }
-
 
 FString G_GetDemoPath()
 {
@@ -1329,46 +1353,46 @@ CCMD(printinterface)
 	Printf("Current interface is %s\n", gi->Name());
 }
 
-CCMD (togglemsg)
+CCMD(togglemsg)
 {
 	FBaseCVar *var, *prev;
 	UCVarValue val;
 
 	if (argv.argc() > 1)
 	{
-		if ( (var = FindCVar (argv[1], &prev)) )
+		if ((var = FindCVar(argv[1], &prev)))
 		{
 			var->MarkUnsafe();
 
-			val = var->GetGenericRep (CVAR_Bool);
+			val = var->GetGenericRep(CVAR_Bool);
 			val.Bool = !val.Bool;
-			var->SetGenericRep (val, CVAR_Bool);
-			const char *statestr = argv.argc() <= 2? "*" : argv[2];
+			var->SetGenericRep(val, CVAR_Bool);
+			const char *statestr = argv.argc() <= 2 ? "*" : argv[2];
 			if (*statestr == '*')
 			{
-				Printf(PRINT_MEDIUM|PRINT_NOTIFY, "\"%s\" = \"%s\"\n", var->GetName(), val.Bool ? "true" : "false");
+				Printf(PRINT_MEDIUM | PRINT_NOTIFY, "\"%s\" = \"%s\"\n", var->GetName(), val.Bool ? "true" : "false");
 			}
 			else
 			{
-				int state = (int)strtoll(argv[2], nullptr,  0);
+				int state = (int)strtoll(argv[2], nullptr, 0);
 				if (state != 0)
 				{
 					// Order of Duke's quote string varies, some have on first, some off, so use the sign of the parameter to decide.
 					// Positive means Off/On, negative means On/Off
-					int quote = state > 0? state + val.Bool : -(state + val.Bool);
+					int quote = state > 0 ? state + val.Bool : -(state + val.Bool);
 					auto text = quoteMgr.GetQuote(quote);
-					if (text) Printf(PRINT_MEDIUM|PRINT_NOTIFY, "%s\n", text);
+					if (text)
+						Printf(PRINT_MEDIUM | PRINT_NOTIFY, "%s\n", text);
 				}
 			}
 		}
 	}
 }
 
-bool OkForLocalization(FTextureID texnum, const char* substitute)
+bool OkForLocalization(FTextureID texnum, const char *substitute)
 {
 	return false;
 }
-
 
 // Mainly a dummy.
 CCMD(taunt)
@@ -1385,7 +1409,7 @@ CCMD(taunt)
 		if (mode == 1)
 		{
 			// todo:
-			//gi->PlayTaunt(taunt);
+			// gi->PlayTaunt(taunt);
 			// Duke:
 			// startrts(taunt, 1)
 			// Blood:
@@ -1396,10 +1420,8 @@ CCMD(taunt)
 			//
 		}
 		Printf(PRINT_NOTIFY, "%s", **CombatMacros[taunt - 1]);
-
 	}
 }
-
 
 void GameInterface::loadPalette()
 {
@@ -1407,7 +1429,7 @@ void GameInterface::loadPalette()
 }
 //---------------------------------------------------------------------------
 //
-// 
+//
 //
 //---------------------------------------------------------------------------
 
@@ -1428,10 +1450,9 @@ void GameInterface::FreeLevelData()
 //---------------------------------------------------------------------------
 
 void ST_DrawCrosshair(int phealth, double xpos, double ypos, double scale, DAngle angle);
-//void DrawGenericCrosshair(int num, int phealth, double xdelta);
+// void DrawGenericCrosshair(int num, int phealth, double xdelta);
 void ST_LoadCrosshair(int num, bool alwaysload);
 CVAR(Int, crosshair, 0, CVAR_ARCHIVE)
-
 
 void DrawCrosshair(int health, double xdelta, double ydelta, double scale, DAngle angle, PalEntry color)
 {
@@ -1444,8 +1465,8 @@ void DrawCrosshair(int health, double xdelta, double ydelta, double scale, DAngl
 			{
 				double crosshair_scale = crosshairscale > 0.0f ? crosshairscale * scale : 1.;
 				DrawTexture(twod, tex, 160 + xdelta, 100 + ydelta, DTA_Color, color, DTA_Rotate, angle.Degrees(),
-					DTA_FullscreenScale, FSMode_Fit320x200, DTA_ScaleX, crosshair_scale, DTA_ScaleY, crosshair_scale, DTA_CenterOffsetRel, true,
-					DTA_ViewportX, viewport3d.Left(), DTA_ViewportY, viewport3d.Top(), DTA_ViewportWidth, viewport3d.Width(), DTA_ViewportHeight, viewport3d.Height(), TAG_DONE);
+							DTA_FullscreenScale, FSMode_Fit320x200, DTA_ScaleX, crosshair_scale, DTA_ScaleY, crosshair_scale, DTA_CenterOffsetRel, true,
+							DTA_ViewportX, viewport3d.Left(), DTA_ViewportY, viewport3d.Top(), DTA_ViewportWidth, viewport3d.Width(), DTA_ViewportHeight, viewport3d.Height(), TAG_DONE);
 
 				return;
 			}
@@ -1466,33 +1487,34 @@ bool M_Active()
 
 struct gamefilter
 {
-	const char* gamename;
+	const char *gamename;
 	int gameflag;
 };
 
 static const gamefilter games[] = {
-	{ "Duke", GAMEFLAG_DUKE},
-	{ "Nam", GAMEFLAG_NAM | GAMEFLAG_NAPALM},
-	{ "NamOnly", GAMEFLAG_NAM},	// for cases where the difference matters.
-	{ "Napalm", GAMEFLAG_NAPALM},
-	{ "WW2GI", GAMEFLAG_WW2GI},
-	{ "Redneck", GAMEFLAG_RR},
-	{ "RedneckRides", GAMEFLAG_RRRA},
-	{ "Blood", GAMEFLAG_BLOOD},
-	{ "ShadowWarrior", GAMEFLAG_SW},
-	{ "Exhumed", GAMEFLAG_POWERSLAVE | GAMEFLAG_EXHUMED},
-	{ "Plutopak", GAMEFLAG_PLUTOPAK},
-	{ "Worldtour", GAMEFLAG_WORLDTOUR},
-	{ "Shareware", GAMEFLAG_SHAREWARE},
+	{"Duke", GAMEFLAG_DUKE},
+	{"Nam", GAMEFLAG_NAM | GAMEFLAG_NAPALM},
+	{"NamOnly", GAMEFLAG_NAM}, // for cases where the difference matters.
+	{"Napalm", GAMEFLAG_NAPALM},
+	{"WW2GI", GAMEFLAG_WW2GI},
+	{"Redneck", GAMEFLAG_RR},
+	{"RedneckRides", GAMEFLAG_RRRA},
+	{"Blood", GAMEFLAG_BLOOD},
+	{"ShadowWarrior", GAMEFLAG_SW},
+	{"Exhumed", GAMEFLAG_POWERSLAVE | GAMEFLAG_EXHUMED},
+	{"Plutopak", GAMEFLAG_PLUTOPAK},
+	{"Worldtour", GAMEFLAG_WORLDTOUR},
+	{"Shareware", GAMEFLAG_SHAREWARE},
 };
 
-bool validFilter(const char* str)
+bool validFilter(const char *str)
 {
-	for (auto& gf : games)
+	for (auto &gf : games)
 	{
 		if (g_gameType & gf.gameflag)
 		{
-			if (!stricmp(str, gf.gamename)) return true;
+			if (!stricmp(str, gf.gamename))
+				return true;
 		}
 	}
 	return false;
@@ -1503,10 +1525,14 @@ bool validFilter(const char* str)
 DEFINE_ACTION_FUNCTION(_Screen, GetViewWindow)
 {
 	PARAM_PROLOGUE;
-	if (numret > 0) ret[0].SetInt(viewport3d.Left());
-	if (numret > 1) ret[1].SetInt(viewport3d.Top());
-	if (numret > 2) ret[2].SetInt(viewport3d.Width());
-	if (numret > 3) ret[3].SetInt(viewport3d.Height());
+	if (numret > 0)
+		ret[0].SetInt(viewport3d.Left());
+	if (numret > 1)
+		ret[1].SetInt(viewport3d.Top());
+	if (numret > 2)
+		ret[2].SetInt(viewport3d.Width());
+	if (numret > 3)
+		ret[3].SetInt(viewport3d.Height());
 	return min(numret, 4);
 }
 
@@ -1588,7 +1614,7 @@ DEFINE_FIELD_X(MapRecord, MapRecord, levelNumber)
 DEFINE_FIELD_X(MapRecord, MapRecord, cluster)
 DEFINE_FIELD_X(MapRecord, MapRecord, NextMap)
 DEFINE_FIELD_X(MapRecord, MapRecord, NextSecret)
-//native readonly String messages[MAX_MESSAGES];
+// native readonly String messages[MAX_MESSAGES];
 DEFINE_FIELD_X(MapRecord, MapRecord, Author)
 DEFINE_FIELD_X(MapRecord, MapRecord, InterBackground)
 
@@ -1603,7 +1629,6 @@ DEFINE_FIELD_X(SummaryInfo, SummaryInfo, totaltime)
 DEFINE_FIELD_X(SummaryInfo, SummaryInfo, cheated)
 DEFINE_FIELD_X(SummaryInfo, SummaryInfo, endofgame)
 
-
 void InitBuildTiles()
 {
 	// need to find a better way to handle this thing.
@@ -1611,7 +1636,7 @@ void InitBuildTiles()
 
 static FString LevelName;
 
-void TITLE_InformName(const char* newname)
+void TITLE_InformName(const char *newname)
 {
 	LevelName = newname;
 	if (newname[0] == '$')
@@ -1644,8 +1669,8 @@ void I_UpdateWindowTitle()
 
 	// Strip out any color escape sequences before setting a window title
 	TArray<char> copy(titlestr.Len() + 1);
-	const char* srcp = titlestr.GetChars();
-	char* dstp = copy.Data();
+	const char *srcp = titlestr.GetChars();
+	char *dstp = copy.Data();
 
 	while (*srcp != 0)
 	{
@@ -1657,13 +1682,17 @@ void I_UpdateWindowTitle()
 		else if (srcp[1] == '[')
 		{
 			srcp += 2;
-			while (*srcp != ']' && *srcp != 0) srcp++;
-			if (*srcp == ']') srcp++;
+			while (*srcp != ']' && *srcp != 0)
+				srcp++;
+			if (*srcp == ']')
+				srcp++;
 		}
 		else
 		{
-			if (srcp[1] != 0) srcp += 2;
-			else break;
+			if (srcp[1] != 0)
+				srcp += 2;
+			else
+				break;
 		}
 	}
 	*dstp = 0;

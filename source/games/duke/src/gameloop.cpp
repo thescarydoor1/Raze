@@ -109,7 +109,10 @@ void GameInterface::Ticker()
 void GameInterface::Startup()
 {
 	getPlayer(myconnectindex)->ftq = 0;
-	PlayLogos(ga_mainmenunostopsound, ga_mainmenunostopsound, false);
+	if (!Args->CheckParm("-levelstart"))
+    {
+        PlayLogos(ga_mainmenu, ga_mainmenu, false);
+    }
 }
 
 //---------------------------------------------------------------------------
