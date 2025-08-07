@@ -656,7 +656,9 @@ static void gameInit()
 void GameInterface::Startup()
 {
 	gameInit();
-	PlayLogos(ga_mainmenu, ga_mainmenu, true);
+	if (!Args->CheckParm("-levelstart")) {
+		PlayLogos(ga_mainmenu, ga_mainmenu, true);
+	}
 }
 
 

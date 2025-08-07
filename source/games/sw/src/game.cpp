@@ -762,7 +762,9 @@ void GameInterface::Render()
 
 void GameInterface::Startup()
 {
-    PlayLogos(ga_mainmenunostopsound, ga_mainmenu, false);
+    if (!Args->CheckParm("-levelstart")) {
+        PlayLogos(ga_mainmenunostopsound, ga_mainmenu, false);
+    }
 }
 
 
